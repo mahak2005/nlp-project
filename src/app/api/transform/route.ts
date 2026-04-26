@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
     const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
 
-    const prompt =
+    const transformationPrompt =
       mode === 'informal-to-formal'
         ? `Convert the following informal text into formal language.
 
@@ -40,13 +40,37 @@ Input: "${text}"
 Output:`;
 
     // Call Gemini
-    const result = await model.generateContent(prompt);
+    const result = await model.generateContent(transformationPrompt);
     const response = await result.response;
     const resultText = response.text().trim();
+
+    const explanationPrompt =
+      mode === 'informal-to-formal'
+        ? `You transformed text from informal to formal style.
+
+Original text: "${text}"
+Transformed text: "${resultText}"
+
+Explain the conversion in 2-3 concise bullet points.
+Focus on tone, word choice, and grammar shifts.
+Do not mention AI, prompts, or probabilities.`
+        : `You transformed text from formal to informal style.
+
+Original text: "${text}"
+Transformed text: "${resultText}"
+
+Explain the conversion in 2-3 concise bullet points.
+Focus on tone, word choice, and grammar shifts.
+Do not mention AI, prompts, or probabilities.`;
+
+    const explanationResult = await model.generateContent(explanationPrompt);
+    const explanationResponse = await explanationResult.response;
+    const explanation = explanationResponse.text().trim();
 
     return NextResponse.json({
       original: text,
       transformed: resultText,
+      explanation,
       scores: {
         formality: mode === 'informal-to-formal' ? 0.92 : 0.25,
         similarity: 0.88,

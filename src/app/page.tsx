@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 interface TransformationResult {
   original: string;
   transformed: string;
+  explanation: string;
   scores: {
     formality: number;
     similarity: number;
@@ -185,6 +186,15 @@ export default function Home() {
                     <p className="text-xs text-gray-500 mt-2 text-right">
                       Legend: <span className="bg-red-100 dark:bg-red-900/40 text-red-900 dark:text-red-300 line-through px-1 rounded mx-1">Removed</span> | <span className="bg-green-100 dark:bg-green-900/40 text-green-900 dark:text-green-300 px-1 rounded mx-1">Added</span>
                     </p>
+
+                    <div className="mt-4 p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700">
+                      <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        Conversion Explanation
+                      </h4>
+                      <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">
+                        {result.explanation}
+                      </p>
+                    </div>
                   </div>
 
                   {/* Scores */}
